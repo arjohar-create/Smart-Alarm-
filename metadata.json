@@ -1,0 +1,7 @@
+{
+  "name": "Smart Alarm",
+  "description": "A dark mode smart alarm clock with loud sound, vibration, and math challenges to wake up your brain.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
