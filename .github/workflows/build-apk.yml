@@ -1,30 +1,31 @@
 name: Build APK
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Fix Versions
+        run: |
+          sed -i 's/agp = "9.1.1"/agp = "8.6.1"/' gradle/libs.versions.toml
+          sed -i 's/kotlin = "2.2.10"/kotlin = "2.0.21"/' gradle/libs.versions.toml
+          sed -i 's/composeBom = "2024.09.00"/composeBom = "2024.09.03"/' gradle/libs.versions.toml
+          sed -i 's/googleDevtoolsKsp = "2.3.5"/googleDevtoolsKsp = "2.0.21-1.0.28"/' gradle/libs.versions.toml
+
       - uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
+
       - uses: android-actions/setup-android@v3
-      - name: Fix Versions Automatically
-        run: |
-          if [ -f "gradle/libs.versions.toml" ]; then
-            sed -i 's/^kotlin = ".*"/kotlin = "1.9.22"/' gradle/libs.versions.toml
-            sed -i 's/^compose-compiler = ".*"/compose-compiler = "1.5.8"/' gradle/libs.versions.toml
-            sed -i 's/^agp = ".*"/agp = "8.2.2"/' gradle/libs.versions.toml
-          fi
-          if [ -f "build.gradle" ]; then
-            sed -i 's/id "org.jetbrains.kotlin.android" version ".*"/id "org.jetbrains.kotlin.android" version "1.9.22"/' build.gradle
-          fi
-          cat gradle/libs.versions.toml || true
+
       - name: Build APK
         run: |
-          chmod +x gradle./gradlew assembleDebug --stacktrace
+          chmod +x gradlew./gradlew assembleDebug
+
       - uses: actions/upload-artifact@v4
         with:
-          name: APK
+          name: Smart-Alarm-APK
           path: app/build/outputs/apk/debug/app-debug.apk
