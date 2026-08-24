@@ -10,9 +10,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - uses: android-actions/setup-android@v3
-      - name: Build APK Direct
-        run: gradle assembleDebug --stacktrace
+      - name: Fix Versions Automatically
+        run: |
+          if [ -f "gradle/libs.versions.toml" ]; then
+            sed -i 's/^kotlin = ".*"/kotlin = "1.9.22"/' gradle/libs.versions.toml
+            sed -i 's/^compose-compiler = ".*"/compose-compiler = "1.5.8"/' gradle/libs.versions.toml
+            sed -i 's/^agp = ".*"/agp = "8.2.2"/' gradle/libs.versions.toml
+          fi
+          if [ -f "build.gradle" ]; then
+            sed -i 's/id "org.jetbrains.kotlin.android" version ".*"/id "org.jetbrains.kotlin.android" version "1.9.22"/' build.gradle
+          fi
+          cat gradle/libs.versions.toml || true
+      - name: Build APK
+        run: |
+          chmod +x gradle./gradlew assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: apk
+          name: APK
           path: app/build/outputs/apk/debug/app-debug.apk
